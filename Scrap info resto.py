@@ -41,3 +41,5 @@ note_QP = int(infos3[2].contents[0]['class'][1][7:])/10
 #Boucle "if" car pas tous les restaurants ont la note d'ambiance
 if len(infos3) == 4:
   note_ambiance = int(infos3[3].contents[0]['class'][1][7:])/10
+else:
+  note_ambiance = NaN
