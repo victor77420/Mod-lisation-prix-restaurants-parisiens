@@ -18,7 +18,7 @@ url = "https://www.tripadvisor.fr/Restaurant_Review-g187147-d6575305-Reviews-Il_
 request_text = request.urlopen(url).read()
 page = bs4.BeautifulSoup(request_text, "lxml")
 
-#On extrait la note moyenne sur 5 attribuée à ce restaurant, et la fourchette de prix estimée
+#On extrait les informations sur ce restaurant
 
 divs = page.find('div',{'class':'page '})
 infos = divs.find_all('a')
@@ -36,6 +36,6 @@ infos3 = page.find_all('span',{"class":"_377onWB-"})
 note_cuisine = int(infos3[0].contents[0]['class'][1][7:])/10
 note_service = int(infos3[1].contents[0]['class'][1][7:])/10
 note_QP = int(infos3[2].contents[0]['class'][1][7:])/10
-#Boucle "if" car pas tous les restaurants ont la note d'ambiance :
+#Boucle "if" car pas tous les restaurants ont la note d'ambiance
 if len(infos3) == 4:
   note_ambiance = int(infos3[3].contents[0]['class'][1][7:])/10
