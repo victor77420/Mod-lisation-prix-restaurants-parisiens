@@ -31,8 +31,11 @@ style = infos[6].contents
 note = infos[1].contents[0]['title'][0:3]
 prix = infos[3].contents
 
-infos2 = page.find_all('div',{"class":"_1XLfiSsv"})
-fourchette_prix = infos2[0].contents[0]
+if page.find_all('div',{"class":"_1XLfiSsv"}) == []:
+  infos2 = page.find_all('div',{"class":"_1XLfiSsv"})
+  fourchette_prix = infos2[0].contents[0]
+else:
+  fourchette_prix = NaN
 
 infos3 = page.find_all('span',{"class":"_377onWB-"})
 note_cuisine = int(infos3[0].contents[0]['class'][1][7:])/10
