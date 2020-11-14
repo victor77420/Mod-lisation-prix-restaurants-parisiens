@@ -20,9 +20,11 @@ page = bs4.BeautifulSoup(request_text, "lxml")
 
 #On extrait les informations sur ce restaurant
 
+nom = page.find_all('div',{"id":"taplc_top_info_0"})[0].find_all('h1')[0].contents
+
+#Si ça ne marche pas, retirer l'espace après "'page'"
 divs = page.find('div',{'class':'page '})
 infos = divs.find_all('a')
-
 adresse = infos[7].contents
 service = infos[5].contents
 style = infos[6].contents
