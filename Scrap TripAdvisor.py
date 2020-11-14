@@ -91,3 +91,7 @@ for i in range(0,len(restaurants_index)):
     note_ambiance = "Non renseigné"
 
   df = df.append({'Nom':  nom, 'Adresse': adresse, 'Type de service': service, 'Style de nourriture': style, 'Note globale': note, 'Catégorie de prix': prix, 'Fourchette de prix': fourchette_prix, 'Note de cuisine': note_cuisine, 'Note de service': note_service, 'Note qualité-prix': note_QP, 'Note ambiance': note_ambiance}, ignore_index=True)
+
+#Il y a beaucoup de duplicates, il faut les supprimer
+df_propre = df.loc[df.astype(str).drop_duplicates().index]
+df_propre.reset_index()
