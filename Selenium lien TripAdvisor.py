@@ -26,3 +26,110 @@ search.send_keys(Keys.RETURN)
 
 browser.find_element(By.XPATH, '(//h3)[1]/../../a').click()
 browser.current_url #On est censés optenir le lien TripAdvisor du restaurant
+
+
+# Exemple avec le capital social sur societe.com + pages jaunes
+
+import bs4
+from urllib import request
+import selenium
+import html5lib
+
+from time import sleep
+from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome import options
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver import ChromeOptions
+from selenium.common.exceptions import NoSuchElementException
+
+
+# récupération du capital social : 
+
+chrome_options = webdriver.ChromeOptions()
+browser = webdriver.Chrome(executable_path="C:/Users/GUILLOT Robin/Documents/Robin Ensae/Matières/Python//chromedriver",options=chrome_options)
+
+browser.get('https://www.societe.com/')
+
+liste=["304305519","824490221","306332362","315946814","318906591","319947537","320228919","325621605"]    # on a pris pour l'exemple 8 numéros de siren de restaurants
+capital_social=[]
+
+cookie=browser.find_element_by_id("didomi-notice-agree-button").click()                                  # tous les cookies sont visibles par le motif"didomi-notice-agree-button"
+                                                                                                         # on clique dessus pour le supprimer
+for siren in tqdm(liste):
+    
+    search_bar = browser.find_element_by_id("input_search")                                             # on recherche sur la page la barre de recherche
+    search_bar.send_keys(siren + Keys.ENTER)                                                            # on dit au webdriver de taper le siren du resto puis touche ENTRER
+    
+    try:
+        browser.find_element_by_xpath("//p[@class = 'red' and contains (text(),'Aucune réponse pour cette recherche')]")    # ignorer cette partie( le try +except). Spécifique 
+        capital_social.append('NaN')                                                                                        # à societe.com
+        continue
+        
+    except NoSuchElementException:
+        pass
+        
+    try:                                                                                                                   # làpar contre c'est impt : s'il ne trouve pas l'élément
+        cap_soc = browser.find_element_by_id('capital-histo-description').text                                             # on lui dit de continuer normalement
+        capital_social.append(cap_soc)
+        
+    except NoSuchElementException:
+        capital_social.append('NaN')
+            
+              
+        
+print(capital_social)
+
+browser.quit() 
+
+
+
+# récupération du prix moyen sur pages jaunes : 
+
+# série d'options pour notre webdriver comme navigation en mode privé, bloquer les pops ups et publicités (mais pas les cookies ...)
+options = webdriver.ChromeOptions()
+options.add_argument("private")
+options.add_argument("--start-maximized");
+options.add_argument("--ignore-certificate-errors");
+options.add_argument("--disable-popup-blocking");
+options.add_argument("--incognito");
+
+browser = webdriver.Chrome(executable_path="C:/Users/GUILLOT Robin/Documents/Robin Ensae/Matières/Python//chromedriver",options=options)
+
+browser.get('https://www.pagesjaunes.fr/activites')
+
+cookie=browser.find_element_by_id("didomi-notice-agree-button").click()                      #  idem, on clique sur le cookie pour le supprimer
+
+# ici on va récupérer sur les 16 premiers restos parisiens de notre table des restos parisiens (nommée parisiens)
+
+prix_moy_1=[]
+
+
+for k in tqdm(range(0,16)):
+    
+    nom=parisiens.iloc[k].loc['legalName']
+    code_post=parisiens.iloc[k].loc['postalCode']
+    
+    search_bar_une = browser.find_element_by_id("quoiqui")                                
+    search_bar_une.send_keys(nom)
+    
+    search_bar_deux = browser.find_element_by_id("ou")
+    search_bar_deux.send_keys(code_post + Keys.ENTER)
+        
+    try:
+        sleep(0.5)
+        donnee = browser.find_element_by_xpath("//div[@class = 'zone-cvi-cviv']/p[1]").text
+        prix_moy_1.append(donnee)
+        
+    except NoSuchElementException:
+        prix_moy_1.append('NaN')
+        
+    search_bar_une_nettoyee = browser.find_element_by_id("quoiqui").clear()
+    search_bar_deux_nettoyee = browser.find_element_by_id("ou").clear()
+        
+            
+              
+print(prix_moy_1)
+
+browser.quit() 
+
