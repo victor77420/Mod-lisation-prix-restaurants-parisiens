@@ -24,9 +24,11 @@ search = browser.find_element_by_name('q')
 search.send_keys(query)
 search.send_keys(Keys.RETURN)
 
+WebDriverWait(browser,10).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR,"iframe[src^='https://consent.google.com']")))
+WebDriverWait(browser,10).until(EC.element_to_be_clickable((By.XPATH,"//div[@id='introAgreeButton']"))).click() 
+    
 browser.find_element(By.XPATH, '(//h3)[1]/../../a').click()
-browser.current_url #On est censés optenir le lien TripAdvisor du restaurant
-
+browser.current_url #On est censés obtenir le lien TripAdvisor du restaurant
 
 # Exemple avec le capital social sur societe.com + pages jaunes
 
