@@ -95,19 +95,20 @@ options.add_argument("--start-maximized");
 options.add_argument("--ignore-certificate-errors");
 options.add_argument("--disable-popup-blocking");
 options.add_argument("--incognito");
+options.add_argument("--headless");
 
 browser = webdriver.Chrome(executable_path="C:/Users/GUILLOT Robin/Documents/Robin Ensae/Matières/Python//chromedriver",options=options)
 
 browser.get('https://www.pagesjaunes.fr/activites')
 
-cookie=browser.find_element_by_id("didomi-notice-agree-button").click()                      #  idem, on clique sur le cookie pour le supprimer
+cookie=browser.find_element_by_id("didomi-notice-agree-button").click()                      
 
-# ici on va récupérer sur les 16 premiers restos parisiens de notre table des restos parisiens (nommée parisiens)
+# ici on récupère sur tous les resaturants parisiens (faire des boucles de 1000 à chaque fois)
 
-prix_moy_1=[]
+prix_moy=[]
 
 
-for k in tqdm(range(0,16)):
+for k in tqdm(range(449,1000)):
     
     nom=parisiens.iloc[k].loc['legalName']
     code_post=parisiens.iloc[k].loc['postalCode']
@@ -131,7 +132,14 @@ for k in tqdm(range(0,16)):
         
             
               
-print(prix_moy_1)
+print(prix_moy)
 
 browser.quit() 
 
+# on conserve en mémoire la liste obtenue en l'écrivant dans un fichier de notre ordi : 
+
+fichier=open("C:/Users/GUILLOT Robin/Documents/Robin Ensae/Matières/Python/Données/prix_moyen_449_1000.txt","w")     # indiquer le chemin du fichier et le nommer
+fichier.write(str(s))                                                                                             # prix_moy_x_y_.txt où x et y sont les 
+fichier.close()                                                                                                   # positions extremes des restos qu' on a scrappé
+
+# On relance la boucle précédente en faisant sur les restos de 1000 à 1500 etc...
