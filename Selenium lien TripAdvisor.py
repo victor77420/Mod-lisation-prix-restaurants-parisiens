@@ -105,7 +105,7 @@ cookie=browser.find_element_by_id("didomi-notice-agree-button").click()
 
 # ici on récupère sur tous les resaturants parisiens (faire des boucles de 1000 à chaque fois)
 
-prix_moy=[]
+prix_moy_1=[]
 
 
 for k in tqdm(range(449,1000)):
