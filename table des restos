@@ -1,0 +1,12 @@
+# Table brute des restaurants, auquel on ajoute quelques modifications : 
+
+df=pd.read_csv("C:/Users/GUILLOT Robin/Documents/Robin Ensae/Matières/Python/fichier_restaurants.csv",sep=';',header=8,error_bad_lines= False, warn_bad_lines=True)
+df=df.astype({'postalCode': str, 'legalImmat': str})
+df=df.drop(columns=["country","foundingYearSubs"],axis=1)
+df['postalCode']=df['postalCode'].apply(lambda s: s[:5] if len(s)>=7 else '0'+s[:4])
+df['dep']=df['postalCode'].str[:2]
+
+# On crée alors la table parisiens:  
+
+parisiens=df[df['dep']=='75']
+parisiens['arr']=parisiens['postalCode'].apply(lambda s: s[3:] if s[3]!='0' else s[4:])
