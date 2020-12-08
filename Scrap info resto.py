@@ -19,7 +19,7 @@ import re
 i = 0
 parisiens['Style de nourriture'] = 'Non renseigné'
 parisiens['Note Globale'] = "Non renseigné"
-parisiens['Catégorie de prix'] = "Non renseigné
+parisiens['Catégorie de prix'] = "Non renseigné"
 parisiens['Fourchette de prix'] = "Non renseigné"
 parisiens['Note de cuisine'] = "Non renseigné"
 parisiens['Note de service'] = "Non renseigné"
