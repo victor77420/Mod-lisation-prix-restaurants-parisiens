@@ -22,6 +22,7 @@ parisiens['Note de cuisine'] = "Non renseigné"
 parisiens['Note de service'] = "Non renseigné"
 parisiens['Note qualité-prix'] = "Non renseigné"
 parisiens['Note ambiance'] = "Non renseigné"
+parisiens['Nombre avis'] = "Non renseigné"
 
 #Pour chaque lien, on va récupérer les informations du restaurant associé
 for lien in parisiens['Lien TripAdvisor']:
@@ -50,3 +51,6 @@ for lien in parisiens['Lien TripAdvisor']:
     if len(infos3) == 4:
       parisiens['Note ambiance'][i] = int(infos3[3].contents[0]['class'][1][7:])/10 
   i = i + 1
+  
+  if page.find('span',{"class":"_3Wub8auF"}) != []:
+    parisiens['Nombre avis'][i] = page.find('span',{"class":"_3Wub8auF"}).text
