@@ -14,6 +14,8 @@ import bs4
 import pandas as pd
 import re
 
+#"parisiens" désigne le dataframe des restaurants parisiens
+
 i = 0
 parisiens['Style de nourriture'] = 'Non renseigné'
 parisiens['Note Globale'] = "Non renseigné"
