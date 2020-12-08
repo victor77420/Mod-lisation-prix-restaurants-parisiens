@@ -6,7 +6,58 @@ Created on Thu Nov 12 19:17:41 2020
 @author: victorhuynh
 """
 
-### But : obtenir les liens des pages TripAdvisor de plein de restaurants Parisiens
+### But : obtenir les liens des pages TripAdvisor 
+
+import pandas as pd
+
+!pip install selenium
+import time
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+!pip install webdriver-manager
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.common.exceptions import NoSuchElementException
+
+browser = webdriver.Chrome(ChromeDriverManager().install())
+query = 'test pour se débarrasser du cookie' 
+browser.get('https://www.google.fr/')
+search = browser.find_element_by_name('q')
+search.send_keys(query)
+search.send_keys(Keys.RETURN)
+WebDriverWait(browser,15).until(EC.frame_to_be_available_and_switch_to_it((By.CSS_SELECTOR,"iframe[src^='https://consent.google.com']")))
+WebDriverWait(browser,15).until(EC.element_to_be_clickable((By.XPATH,"//div[@id='introAgreeButton']"))).click() 
+
+for i in range(nombre_parisiens): 
+    query = str(parisiens['name'][i]) + ' ' + 'restaurant paris tripadvisor' 
+    browser.get('https://www.google.fr/')
+    search = browser.find_element_by_name('q')
+    search.send_keys(query)
+    search.send_keys(Keys.RETURN)
+    try:
+        browser.find_element(By.XPATH, '(//h3)[1]/../../a').click()
+        parisiens['Lien TripAdvisor'][i] = browser.current_url 
+        continue
+    except NoSuchElementException:
+        pass
+    i = i + 1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#ON OUBLIE TEMPORAIREMENT CETTE PARTIE
 
 import urllib
 from urllib import request
