@@ -12,6 +12,7 @@ import urllib
 from urllib import request
 import bs4
 import pandas as pd
+import re
 
 i = 0
 parisiens['Style de nourriture'] = 'Non renseigné'
@@ -53,4 +54,4 @@ for lien in parisiens['Lien TripAdvisor']:
   i = i + 1
   
   if page.find('span',{"class":"_3Wub8auF"}) != []:
-    parisiens['Nombre avis'][i] = page.find('span',{"class":"_3Wub8auF"}).text
+    parisiens['Nombre avis'][i] = re.sub("[^0-9]", "", page.find('span',{"class":"_3Wub8auF"}).text) #ça sert à ne garder que les chiffres
