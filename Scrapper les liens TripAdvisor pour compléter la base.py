@@ -42,10 +42,72 @@ for i in range(nombre_parisiens):
         continue
     except NoSuchElementException:
         pass
-    i = i + 1
+    i = i + 1 #Je crois que cette ligne ne sert à rien
+    
+parisiens_test = pd.DataFrame.copy(parisiens) #J'ai créé des copies pour la jouer safe mais on pourra remplacer les tests par "parisien" à la fin
+    
+ #Certains restos ont eu comme lien le lien d'une review en particulier : le code suivant permet de trouver la page globale de ces restos
+ for i in range(nombre_parisiens): 
+    if "https://www.tripadvisor.fr/ShowUserReviews" in parisiens_test['Lien TripAdvisor'][i]:
+        url = parisiens_test['Lien TripAdvisor'][i]
+        request_text = request.urlopen(url).read()
+        page = bs4.BeautifulSoup(request_text, "lxml")        
+        if page.find_all('span',{'class':'altHeadInline'}) != []:
+            span = page.find('span',{'class':'altHeadInline'})
+            if span.find('a')['href'] != []:
+                href = span.find('a')['href']
+                parisiens_test['Lien TripAdvisor'][i] = 'https://www.tripadvisor.fr' + href
 
+#On ne garde que les restaurants dont le lien est bien une page tripadvisor : on en a 14 000 environ
+parisiens_test2 = parisiens_test[parisiens_test['Lien TripAdvisor'].str.contains('https://www.tripadvisor.fr/Restaurant_Review')].reset_index()
 
+import urllib
+from urllib import request
+import bs4
+import pandas as pd
+import re
 
+parisiens_test2['Style de nourriture'] = 'Non renseigné'
+parisiens_test2['Note Globale'] = "Non renseigné"
+parisiens_test2['Catégorie de prix'] = "Non renseigné"
+parisiens_test2['Fourchette de prix'] = "Non renseigné"
+parisiens_test2['Note de cuisine'] = "Non renseigné"
+parisiens_test2['Note de service'] = "Non renseigné"
+parisiens_test2['Note qualité-prix'] = "Non renseigné"
+parisiens_test2['Note ambiance'] = "Non renseigné"
+parisiens_test2['Nombre avis'] = "Non renseigné"
+
+#Pour chaque lien, on va récupérer les informations du restaurant associé
+for i in range(14830):
+  url = parisiens_test2['Lien TripAdvisor'][i]
+  request_text = request.urlopen(url).read()
+  page = bs4.BeautifulSoup(request_text, "lxml")
+
+  #Si ça ne marche pas, retirer l'espace après "'page'"
+  if page.find_all('div',{'class':'page '}) != []:
+    divs = page.find('div',{'class':'page '})
+    infos = divs.find_all('a')
+    parisiens_test2['Style de nourriture'][i] = infos[6].contents
+    parisiens_test2['Note Globale'][i] = infos[1].contents[0]['title'][0:3]
+    parisiens_test2['Catégorie de prix'][i] = infos[3].contents
+
+  if page.find_all('div',{"class":"_1XLfiSsv"}) != []:
+    infos2 = page.find_all('div',{"class":"_1XLfiSsv"})
+    parisiens_test2['Fourchette de prix'][i] = infos2[0].contents[0]
+
+  if page.find_all('span',{"class":"_377onWB-"}) != []:
+    infos3 = page.find_all('span',{"class":"_377onWB-"})
+    parisiens_test2['Note de cuisine'][i] = int(infos3[0].contents[0]['class'][1][7:])/10
+    parisiens_test2['Note de service'][i] = int(infos3[1].contents[0]['class'][1][7:])/10
+    #Boucle "if" car pas tous les restaurants ont la note de qualité prix
+    if len(infos3) == 3:
+        parisiens_test2['Note qualité-prix'][i] = int(infos3[2].contents[0]['class'][1][7:])/10
+    #Boucle "if" car pas tous les restaurants ont la note d'ambiance
+    if len(infos3) == 4:
+      parisiens_test2['Note ambiance'][i] = int(infos3[3].contents[0]['class'][1][7:])/10 
+    
+  if page.find('span',{"class":"_3Wub8auF"}) != []:
+    parisiens_test2['Nombre avis'][i] = re.sub("[^0-9]", "", page.find('span',{"class":"_3Wub8auF"}).text) #ça sert à ne garder que les chiffres
 
 
 
