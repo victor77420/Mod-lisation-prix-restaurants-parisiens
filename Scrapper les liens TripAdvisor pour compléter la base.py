@@ -98,7 +98,8 @@ for i in range(14830):
   if page.find_all('span',{"class":"_377onWB-"}) != []:
     infos3 = page.find_all('span',{"class":"_377onWB-"})
     parisiens_test2['Note de cuisine'][i] = int(infos3[0].contents[0]['class'][1][7:])/10
-    parisiens_test2['Note de service'][i] = int(infos3[1].contents[0]['class'][1][7:])/10
+    if len(infos3) == 2:
+        parisiens_test2['Note de service'][i] = int(infos3[1].contents[0]['class'][1][7:])/10
     #Boucle "if" car pas tous les restaurants ont la note de qualité prix
     if len(infos3) == 3:
         parisiens_test2['Note qualité-prix'][i] = int(infos3[2].contents[0]['class'][1][7:])/10
