@@ -121,3 +121,27 @@ parisiens_test4 = parisiens_test4[parisiens_test4['Fourchette prix sup'] != '23\
 
 parisiens_test4 = parisiens_test4.astype({'Fourchette prix inf' : 'int64','Fourchette prix sup' : 'int64'})
 parisiens_test4['Prix moyen'] = (parisiens_test4['Fourchette prix inf'] + parisiens_test4['Fourchette prix sup']) / 2
+
+#Etudions le prix moyen d'un restaurant par arrondissement
+
+df = parisiens_test4.groupby('arr').aggregate({'Prix moyen' : 'mean'}).reset_index()
+df = df.rename(columns = {'arr' : 'Arrondissement'})
+sns.catplot(x='Arrondissement', y='Prix moyen', edgecolor="black", data=df, kind = "bar", color = "pink")
+
+#Traçons l'évolution du prix d'un restaurant en fonction de l'année de sa créaton
+
+df = parisiens_test4.groupby('foundingYear').aggregate({'Prix moyen' : 'mean'}).reset_index()
+df = df.rename(columns = {'foundingYear' : 'Année de création'})
+sns.lineplot(x='Année de création', y='Prix moyen', data=df, color = "green")
+
+#Voyons le prix d'un restaurant selon le type de service
+
+df = parisiens_test4.groupby('categoryLabel').aggregate({'Prix moyen' : 'mean'}).reset_index()
+df = df.rename(columns = {'categoryLabel' : 'Type de service'})
+sns.catplot(x='categoryLabel', y='Prix moyen', edgecolor="black", data=df, kind = "bar", color = "orange")
+
+#Comparons taille d'entreprise d'un restaurant et prix moyen du repas dans ce restaurant
+
+df = parisiens_test4.groupby('categorySize').aggregate({'Prix moyen' : 'mean'}).reset_index()
+#df = df.rename(columns = {'arr' : 'Arrondissement'})
+sns.catplot(x='categorySize', y='Prix moyen', edgecolor="black", data=df, kind = "bar", color = "blue")
