@@ -6,7 +6,6 @@ Created on Fri Dec 11 22:48:21 2020
 @author: victorhuynh
 """
 
-pd.set_option('display.max_rows', 800)
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -22,11 +21,9 @@ parisiens_test3 = parisiens_test3.drop('Unnamed: 0.1', axis=1)
 parisiens_test3 = parisiens_test3.astype({'Catégorie de prix':'str'})
 parisiens_test3 = parisiens_test3[parisiens_test3['Catégorie de prix'].str.contains('€')].reset_index(drop = True)
 
-y = [0,0,0]
-for i in range (3):
-    y[i]= parisiens_test3['Catégorie de prix'].value_counts()[i]
-x = ['€','€€-€€€','€€€€']
-plt.bar(x, y, color = "#A0AAE4", edgecolor="black",linewidth=3, ecolor = "green",capsize = 10)
+df = parisiens_test3.groupby('Catégorie de prix').aggregate({'name':'count'}).reset_index()
+df = df.rename(columns={'name': 'Effectif'})
+sns.catplot(x='Catégorie de prix', y='Effectif', edgecolor="black", data=df,kind = "bar", color = "cyan")
 
 ##Quelques tendances
         
