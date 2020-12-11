@@ -32,10 +32,12 @@ sns.catplot(x='Catégorie de prix', y='Effectif', edgecolor="black", data=df,kin
 parisiens_test3['Note Globale'] = parisiens_test3['Note Globale'].str.replace(",", ".").astype(float)
 parisiens_test3.groupby('Catégorie de prix').aggregate({'Note Globale' : 'mean'})
 
-#Moyenne de nombre d'avis par catégorie de prix
+#Moyenne du nombre d'avis par catégorie de prix
 
 parisiens_test3['Nombre avis'] = parisiens_test3['Nombre avis'].astype(int)
-parisiens_test3.groupby('Catégorie de prix').aggregate({'Nombre avis' : 'mean'})
+df = parisiens_test3.groupby('Catégorie de prix').aggregate({'Nombre avis' : 'mean'}).reset_index()
+df = df.rename(columns={'Nombre avis': "Nombre moyen d'avis"})
+sns.catplot(x='Catégorie de prix', y="Nombre moyen d'avis", edgecolor="black", data=df,kind = "bar", color = "yellow")
 
 #Moyenne de note de cuisine par catégorie de prix
 
