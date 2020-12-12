@@ -86,6 +86,10 @@ ax = plt.axes()
 ax.xaxis.set_major_locator(MultipleLocator(1))
 plt.bar(arrondissements_expensive,effectif_expensive/effectif_total_par_arr, color = "#EC7063", edgecolor="black",linewidth=1, ecolor = "green",capsize = 10)
         
+#Ce dernier graphique est semblable au graphique représentant le niveau de vie selon l'arrondissement : donc plus un arrondissement est riche, plus il a de restaurants chers
+
+sns.catplot(x='arr', y='Niveau de vie Commune', edgecolor="black", data=parisiens, kind = "bar", color = "grey")
+     
 ##Etude de la variable "Prix moyen" pour avoir les idées plus claires avec des prix en chiffres
 
 #Etudions le prix moyen d'un restaurant par arrondissement
