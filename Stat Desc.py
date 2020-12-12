@@ -15,6 +15,10 @@ df = parisiens.groupby('Catégorie de prix').aggregate({'name':'count'}).reset_i
 df = df.rename(columns={'name': 'Nombre de restaurants'})
 sns.catplot(x='Catégorie de prix', y='Nombre de restaurants', edgecolor="black", data=df,kind = "bar", color = "cyan")
 
+parisiens.describe()
+#Le prix moyen du restaurant Parisien est de 33.60€, avec un écart-type de 102.36€. Cela semble élevé, et peut s'expliquer par le fait qu'il y a beaucoup 
+#de restaurants très chers parmi les restaurants dont on connaît le prix moyen dans notre base. Le prix médian, 22€ semble déjà plus raisonnable.
+
 ##Quelques tendances
         
 #Moyenne de note globale par catégorie de prix
@@ -69,6 +73,8 @@ effectif_total_par_arr = parisiens.groupby('arr').aggregate({'arr' : 'count'})['
 effectif_cheap = parisiens_cheap.groupby('arr').aggregate({'arr' : 'count'})['arr']
 arrondissements_cheap = range(1,21)
 ax = plt.axes()
+plt.xlabel("Arrondissement")
+plt.ylabel("% de restaurants bon marché dans cet arrondissement")
 ax.xaxis.set_major_locator(MultipleLocator(1))
 plt.bar(arrondissements_cheap,effectif_cheap/effectif_total_par_arr, color = "#ABEBC6", edgecolor="black",linewidth=1, ecolor = "green",capsize = 10)
 
@@ -76,6 +82,8 @@ plt.bar(arrondissements_cheap,effectif_cheap/effectif_total_par_arr, color = "#A
 effectif_average = parisiens_average.groupby('arr').aggregate({'arr' : 'count'})['arr']
 arrondissements_average = range(1,21)
 ax = plt.axes()
+plt.xlabel("Arrondissement")
+plt.ylabel("% de restaurants modérés dans cet arrondissement")
 ax.xaxis.set_major_locator(MultipleLocator(1))
 plt.bar(arrondissements_average,effectif_average/effectif_total_par_arr, color = "#F0B27A", edgecolor="black",linewidth=1, ecolor = "green",capsize = 10)
 
@@ -83,6 +91,8 @@ plt.bar(arrondissements_average,effectif_average/effectif_total_par_arr, color =
 effectif_expensive = parisiens_expensive.groupby('arr').aggregate({'arr' : 'count'})['arr']
 arrondissements_expensive = range(1,21)
 ax = plt.axes()
+plt.xlabel("Arrondissement")
+plt.ylabel("% de restaurants chers dans cet arrondissement")
 ax.xaxis.set_major_locator(MultipleLocator(1))
 plt.bar(arrondissements_expensive,effectif_expensive/effectif_total_par_arr, color = "#EC7063", edgecolor="black",linewidth=1, ecolor = "green",capsize = 10)
         
@@ -119,7 +129,7 @@ sns.catplot(x='Taille du restaurant', y='Prix moyen', edgecolor="black", data=df
 ##On commente les coefficients de corrélation de plusieurs variables avec 'Prix moyen'
 
 parisiens.corr()
-#Les coefficients sont très petits mais on peut commenter leurs signes
+#Les coefficients sont très petits mais on peut commenter leurs signes. 
 
 
 
