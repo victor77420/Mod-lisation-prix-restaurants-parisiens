@@ -112,9 +112,10 @@ df = parisiens.groupby('categorySize').aggregate({'Prix moyen' : 'mean'}).reset_
 df = df.rename(columns = {'categorySize' : 'Taille du restaurant'})
 sns.catplot(x='Taille du restaurant', y='Prix moyen', edgecolor="black", data=df, kind = "bar", color = "blue")
 
+##On commente les coefficients de corrélation de plusieurs variables avec 'Prix moyen'
 
-
-
+parisiens.corr()
+#Les coefficients sont très petits mais on peut commenter leurs signes
 
 
 
