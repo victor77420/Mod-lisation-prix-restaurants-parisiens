@@ -9,7 +9,7 @@ Created on Fri Dec 11 22:48:21 2020
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-parisiens = pd.read_csv('/Users/victorhuynh/Documents/ENSAE/ENSAE 2A/2A S1/PDS/Projet/victoire.csv', sep = ";")
+parisiens = pd.read_csv('/Users/victorhuynh/Documents/ENSAE/ENSAE 2A/2A S1/PDS/Projet/table_finale.csv', sep = ";")
 
 df = parisiens.groupby('Catégorie de prix').aggregate({'name':'count'}).reset_index()
 df = df.rename(columns={'name': 'Nombre de restaurants'})
@@ -30,34 +30,25 @@ parisiens.groupby('Catégorie de prix').aggregate({'Note Globale' : 'mean'})
 
 #Moyenne du nombre d'avis par catégorie de prix
 
-parisiens['Nombre avis'] = parisiens['Nombre avis'].astype(int)
 df = parisiens.groupby('Catégorie de prix').aggregate({'Nombre avis' : 'mean'}).reset_index()
 df = df.rename(columns={'Nombre avis': "Nombre moyen d'avis"})
 sns.catplot(x='Catégorie de prix', y="Nombre moyen d'avis", edgecolor="black", data=df,kind = "bar", color = "yellow")
 
 #Moyenne de note de cuisine par catégorie de prix
 
-parisiens_avec_note_cuisine = parisiens[parisiens['Note de cuisine'] != 'Non renseigné']
-parisiens_avec_note_cuisine = parisiens_avec_note_cuisine.astype({'Note de cuisine' : 'float'})
-parisiens_avec_note_cuisine.groupby('Catégorie de prix').aggregate({'Note de cuisine' : 'mean'})
+parisiens.groupby('Catégorie de prix').aggregate({'Note de cuisine' : 'mean'})
 
 #Moyenne de note de service par catégorie de prix
 
-parisiens_avec_note_service = parisiens[parisiens['Note de service'] != 'Non renseigné']
-parisiens_avec_note_service = parisiens_avec_note_service.astype({'Note de service' : 'float'})
-parisiens_avec_note_service.groupby('Catégorie de prix').aggregate({'Note de service' : 'mean'})
+parisiens.groupby('Catégorie de prix').aggregate({'Note de service' : 'mean'})
 
 #Moyenne de note QP par catégorie de prix
 
-parisiens_avec_note_QP = parisiens[parisiens['Note qualité-prix'] != 'Non renseigné']
-parisiens_avec_note_QP = parisiens_avec_note_QP.astype({'Note qualité-prix' : 'float'})
-parisiens_avec_note_QP.groupby('Catégorie de prix').aggregate({'Note qualité-prix' : 'mean'})
+parisiens.groupby('Catégorie de prix').aggregate({'Note qualité-prix' : 'mean'})
 
 #Moyenne de note d'ambiance par catégorie de prix
 
-parisiens_avec_note_ambiance = parisiens[parisiens['Note ambiance'] != 'Non renseigné']
-parisiens_avec_note_ambiance = parisiens_avec_note_ambiance.astype({'Note ambiance' : 'float'})
-parisiens_avec_note_ambiance.groupby('Catégorie de prix').aggregate({'Note ambiance' : 'mean'})
+parisiens.groupby('Catégorie de prix').aggregate({'Note ambiance' : 'mean'})
 
 ##On va prendre une catégorie de prix par une, et représenter le pourcentage de restaurants par arrondissement dans cette catégorie de prix
 
