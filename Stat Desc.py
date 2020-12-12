@@ -19,6 +19,8 @@ parisiens.describe()
 #Le prix moyen du restaurant Parisien est de 33.60€, avec un écart-type de 102.36€. Cela semble élevé, et peut s'expliquer par le fait qu'il y a beaucoup 
 #de restaurants très chers parmi les restaurants dont on connaît le prix moyen dans notre base. Le prix médian, 22€ semble déjà plus raisonnable.
 
+parisiens.corr()['Prix moyen'].reset_index()
+
 ##Quelques tendances
         
 #Moyenne de note globale par catégorie de prix
