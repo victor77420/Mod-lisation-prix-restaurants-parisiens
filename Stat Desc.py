@@ -6,10 +6,23 @@ Created on Fri Dec 11 22:48:21 2020
 @author: victorhuynh
 """
 
+# On importe trois modules qui vont nous servir pour réaliser des graphiques.
 import matplotlib.pyplot as plt
 import seaborn as sns
+import geopandas as gpd
 
+# On importe la base de données qu'on a construite via scrapping
 parisiens = pd.read_csv('/Users/victorhuynh/Documents/ENSAE/ENSAE 2A/2A S1/PDS/Projet/table_finale.csv', sep = ";")
+
+parisiens_avec_prix = parisiens[parisiens['Prix moyen'].notna()] 
+# On crée un dataframe secondaire où l'on retire tous les restaurants pour lequels on n'a pas de 
+# valeur quantitative : il nous servira à certaines étapes
+display(parisiens_avec_prix.sort_values('Prix moyen').tail(5))
+# Pour visualiser si on a des valeurs aberrantes
+
+parisiens = parisiens.drop([10879,1675,12166], axis=0).reset_index(drop = True)
+parisiens_avec_prix = parisiens_avec_prix.drop([10879,1675,12166], axis=0).reset_index(drop = True)
+#On retire les lignes des restaurants ayant des prix moyens aberrants, qui risquent de fausser nos graphiques
 
 df = parisiens.groupby('Catégorie de prix').aggregate({'name':'count'}).reset_index()
 df = df.rename(columns={'name': 'Nombre de restaurants'})
@@ -19,16 +32,14 @@ parisiens.describe()
 #Le prix moyen du restaurant Parisien est de 33.60€, avec un écart-type de 102.36€. Cela semble élevé, et peut s'expliquer par le fait qu'il y a beaucoup 
 #de restaurants très chers parmi les restaurants dont on connaît le prix moyen dans notre base. Le prix médian, 22€ semble déjà plus raisonnable.
 
-parisiens.corr()['Prix moyen'].reset_index()
-
 ##Quelques tendances
         
 #Moyenne de note globale par catégorie de prix
-parisiens = parisiens[parisiens['Note Globale'] != 'NR']
-parisiens = parisiens[parisiens['Note Globale'] != 'Non renseigné']
-
 parisiens['Note Globale'] = parisiens['Note Globale'].str.replace(",", ".").astype(float)
-parisiens.groupby('Catégorie de prix').aggregate({'Note Globale' : 'mean'})
+
+df = parisiens.groupby('Catégorie de prix').aggregate({'Note Globale' : 'mean'}).reset_index()
+df = df.rename(columns={'Note Globale': 'Note globale moyenne'})
+sns.catplot(x='Catégorie de prix', y='Note globale moyenne', edgecolor="black", data=df,kind = "bar", color = "brown")
 
 #Moyenne du nombre d'avis par catégorie de prix
 
@@ -54,31 +65,84 @@ parisiens.groupby('Catégorie de prix').aggregate({'Note ambiance' : 'mean'})
 
 ##On va prendre une catégorie de prix par une, et représenter le pourcentage de restaurants par arrondissement dans cette catégorie de prix
 
+#On crée des DataFrames regroupant chaque catégorie de prix
 parisiens_cheap = parisiens[parisiens['Catégorie de prix'] == 'faible'].reset_index(drop = True)
 parisiens_average = parisiens[parisiens['Catégorie de prix'] == 'moyen'].reset_index(drop = True)
 parisiens_expensive = parisiens[parisiens['Catégorie de prix'] == 'élevé'].reset_index(drop = True)
 
 #On compte le nombre de restaurants par arrondissement
-from matplotlib.ticker import MultipleLocator
 effectif_total_par_arr = parisiens.groupby('arr').aggregate({'arr' : 'count'})['arr']
+
+#On importe une fonction qui nous permettra de choisir les graduations des axes dans nos graphes
+from matplotlib.ticker import MultipleLocator
+
 
 #On compte le nombre de restaurants "cheap" par arrondissement et on trace leur fréquence par arrondissement
 effectif_cheap = parisiens_cheap.groupby('arr').aggregate({'arr' : 'count'})['arr']
+#On compte par arrondissement le nombre de restaurants bon marché
 arrondissements_cheap = range(1,21)
+
 ax = plt.axes()
 plt.xlabel("Arrondissement")
 plt.ylabel("% de restaurants bon marché dans cet arrondissement")
-ax.xaxis.set_major_locator(MultipleLocator(1))
-plt.bar(arrondissements_cheap,effectif_cheap/effectif_total_par_arr, color = "#ABEBC6", edgecolor="black",linewidth=1, ecolor = "green",capsize = 10)
+ax.xaxis.set_major_locator(MultipleLocator(1)) 
+#Sert à choisir une graduation de 1, afin de représenter clairement chaque arrondissement
+plt.bar(arrondissements_cheap,effectif_cheap/effectif_total_par_arr, color = "#ABEBC6", 
+                                                                     edgecolor="black",
+                                                                     linewidth=1, 
+                                                                     ecolor = "green",
+                                                                     capsize = 10)
+
+# Représentation du nombre de restaurants émeraudes par arrondissement 
+df = parisiens.rename(columns = {'arr' : 'Arrondissement', 'nb_emeraudes' : 'Nombre de restaurants émeraudes'})
+sns.catplot(x='Arrondissement', y='Nombre de restaurants émeraudes', edgecolor="black", data=df, kind = "bar", color = "cyan")
+
+#Versions cartographiques de ces graphiques :
+
+arrondissements = gpd.read_file("https://opendata.paris.fr/explore/dataset/arrondissements/download/?format=geojson&timezone=Europe/Berlin&lang=fr")
+# Fond de carte des arrondissements parisiens trouvé sur internet
+arrondissements['l_ar'] = arrondissements['l_ar'].str.extract('(\d+)').astype(int)
+arrondissements = arrondissements.rename(columns = {'l_ar' : 'arr'})
+# On recode la colonne 'l_ar' représentant l'arrondissement pour pouvoir faire une fusion avec notre
+# base de données ensuite.
+
+df = parisiens_cheap.groupby('arr').aggregate({'name' : 'count'}).reset_index()
+# Par arrondissement, on compte le nombre de restaurants dans la base "cheap"
+df2 = parisiens.groupby('arr').aggregate({'name' : 'count'}).reset_index()
+# Par arrondissement, on compte le nombre de restaurants dans la base de données entière
+df['name'] = df['name']/df2['name']
+# Ici, df est donc un dataframe qui recense par arrondissement le pourcentage de restaurants chers
+
+arrondissements.merge(df, how='inner').plot(column = 'name',
+                                            legend = True, 
+                                            legend_kwds={'label': "Pourcentage de restaurants bon marché par arrondissement", 
+                                                         'orientation': "horizontal"})
+
+df = parisiens.drop_duplicates(subset = ['arr'])
+# On garde juste un restaurant par arrondissement pour avoir le nombre de restaurants émeraudes
+# par arrondissement.
+
+arrondissements.merge(df, how='inner').plot(column = 'nb_emeraudes',
+                                            legend = True, 
+                                            legend_kwds={'label': "Nombre de restaurants émeraudes par arrondissement", 
+                                                         'orientation': "horizontal"})
+
 
 #On compte le nombre de restaurants "average" par arrondissement et on trace leur fréquence par arrondissement
 effectif_average = parisiens_average.groupby('arr').aggregate({'arr' : 'count'})['arr']
 arrondissements_average = range(1,21)
+
 ax = plt.axes()
 plt.xlabel("Arrondissement")
 plt.ylabel("% de restaurants modérés dans cet arrondissement")
 ax.xaxis.set_major_locator(MultipleLocator(1))
-plt.bar(arrondissements_average,effectif_average/effectif_total_par_arr, color = "#F0B27A", edgecolor="black",linewidth=1, ecolor = "green",capsize = 10)
+plt.bar(arrondissements_average,effectif_average/effectif_total_par_arr, color = "#F0B27A", 
+                                                                         edgecolor="black",
+                                                                         linewidth=1, 
+                                                                         ecolor = "green",
+                                                                         capsize = 10)
+
+#### JE ME SUIS STOPP2 LA DANS LA MISE A JOUR
 
 #On compte le nombre de restaurants "expensive" par arrondissement et on trace leur fréquence par arrondissement
 effectif_expensive = parisiens_expensive.groupby('arr').aggregate({'arr' : 'count'})['arr']
