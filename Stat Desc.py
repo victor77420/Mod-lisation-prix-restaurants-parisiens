@@ -142,21 +142,50 @@ plt.bar(arrondissements_average,effectif_average/effectif_total_par_arr, color =
                                                                          ecolor = "green",
                                                                          capsize = 10)
 
-#### JE ME SUIS STOPP2 LA DANS LA MISE A JOUR
-
 #On compte le nombre de restaurants "expensive" par arrondissement et on trace leur fréquence par arrondissement
 effectif_expensive = parisiens_expensive.groupby('arr').aggregate({'arr' : 'count'})['arr']
 arrondissements_expensive = range(1,21)
+
 ax = plt.axes()
 plt.xlabel("Arrondissement")
 plt.ylabel("% de restaurants chers dans cet arrondissement")
 ax.xaxis.set_major_locator(MultipleLocator(1))
-plt.bar(arrondissements_expensive,effectif_expensive/effectif_total_par_arr, color = "#EC7063", edgecolor="black",linewidth=1, ecolor = "green",capsize = 10)
-        
+plt.bar(arrondissements_expensive,effectif_expensive/effectif_total_par_arr, color = "#EC7063", 
+                                                                             edgecolor="black",
+                                                                             linewidth=1, 
+                                                                             ecolor = "green",
+                                                                             capsize = 10)
+
 #Ce dernier graphique est semblable au graphique représentant le niveau de vie selon l'arrondissement : donc plus un arrondissement est riche, plus il a de restaurants chers
 
 sns.catplot(x='arr', y='Niveau de vie Commune', edgecolor="black", data=parisiens, kind = "bar", color = "grey")
-     
+
+#Versions cartographiques de ces graphiques :
+
+df = parisiens_expensive.groupby('arr').aggregate({'name' : 'count'}).reset_index()
+
+df2 = parisiens.groupby('arr').aggregate({'name' : 'count'}).reset_index()
+# Par arrondissement, on compte le nombre de restaurants dans la base de données entière
+df['name'] = df['name']/df2['name']
+# Ici, df est donc un dataframe qui recense par arrondissement le pourcentage de restaurants chers
+
+# Par arrondissement on compte le nombre de restaurants dans la base "expensive"
+arrondissements.merge(df, how='inner').plot(column = 'name',
+                                            cmap='OrRd',
+                                            legend = True, 
+                                            legend_kwds={'label': "Pourcentage de restaurants chers par arrondissement", 
+                                                         'orientation': "horizontal"})
+
+df = parisiens.drop_duplicates(subset = ['arr'])
+# On garde juste un restaurant par arrondissement pour avoir le niveau de vie par arrondissement.
+
+arrondissements.merge(df, how='inner').plot(column = 'Niveau de vie Commune',
+                                            cmap='OrRd',
+                                            legend = True, 
+                                            legend_kwds={'label': "Niveau de vie par arrondissement", 
+                                                         'orientation': "horizontal"})
+
+        
 ##Etude de la variable "Prix moyen" pour avoir les idées plus claires avec des prix en chiffres
 
 #Etudions le prix moyen d'un restaurant par arrondissement
@@ -170,10 +199,20 @@ sns.catplot(x='Arrondissement', y='Prix moyen', edgecolor="black", data=df, kind
 df = parisiens.groupby('foundingYear').aggregate({'Prix moyen' : 'mean'}).reset_index()
 df = df.rename(columns = {'foundingYear' : 'Année de création'})
 sns.lineplot(x='Année de création', y='Prix moyen', data=df, color = "green")
+#On choisit ici le lineplot pour représenter la continuité dans le temps
 
 #Voyons le prix d'un restaurant selon le style de nourriture
 
 df = parisiens.groupby('Style de nourriture').aggregate({'Prix moyen' : 'mean'}).reset_index()
+g = sns.catplot(x='Style de nourriture', y='Prix moyen', edgecolor="black", data=df, kind = "bar", color = "orange")
+g.set_xticklabels(rotation=90) #Pour ne pas que les intitulés se chevauchent
+
+#Les catégories suivantes ont été attribuées à tort à de nombreux restaurants : on refait le même graphique que le précédent mais sans ces catégories
+df = parisiens[parisiens['Style de nourriture'] != 'Asiatique']
+df = df[df['Style de nourriture'] != 'Japonaise']
+df = df[df['Style de nourriture'] != 'Cantonaise']
+df = df[df['Style de nourriture'] != 'Espagnole']
+df = df.groupby('Style de nourriture').aggregate({'Prix moyen' : 'mean'}).reset_index()
 g = sns.catplot(x='Style de nourriture', y='Prix moyen', edgecolor="black", data=df, kind = "bar", color = "orange")
 g.set_xticklabels(rotation=90) #Pour ne pas que les intitulés se chevauchent
 
@@ -185,8 +224,8 @@ sns.catplot(x='Taille du restaurant', y='Prix moyen', edgecolor="black", data=df
 
 ##On commente les coefficients de corrélation de plusieurs variables avec 'Prix moyen'
 
-parisiens.corr()
-#Les coefficients sont très petits mais on peut commenter leurs signes. 
+parisiens.corr()['Prix moyen'].reset_index()
+#Les coefficients sont très petits mais leurs signes sont en accord avec les résultats tirés des graphiques précédents. 
 
 
 
