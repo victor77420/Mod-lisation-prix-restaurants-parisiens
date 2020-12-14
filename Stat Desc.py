@@ -250,10 +250,6 @@ sns.catplot(x='Taille du restaurant', y='Prix moyen', edgecolor="black", data=df
 parisiens.corr()['Prix moyen'].reset_index()
 #Les coefficients sont très petits mais leurs signes sont en accord avec les résultats tirés des graphiques précédents. 
 
-# Création d'une heatmap pour voir plus largement les corrélations entre toutes les variables
-sns.set(font_scale=1.4)
-sns.clustermap(parisiens.drop(columns = 'dep').corr(), annot=True, annot_kws={'size': 18}, figsize=(50, 50))
-
 
 
 
