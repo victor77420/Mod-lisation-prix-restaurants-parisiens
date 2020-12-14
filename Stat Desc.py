@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import geopandas as gpd
 
+sns.set_style("darkgrid", {"axes.facecolor": ".9"}) #Choix du style de fond
+
 # On importe la base de données qu'on a construite via scrapping
 parisiens = pd.read_csv('/Users/victorhuynh/Documents/ENSAE/ENSAE 2A/2A S1/PDS/Projet/table_finale.csv', sep = ";")
 
@@ -24,6 +26,11 @@ parisiens = parisiens.drop([10879,1675,12166], axis=0).reset_index(drop = True)
 parisiens_avec_prix = parisiens_avec_prix.drop([10879,1675,12166], axis=0).reset_index(drop = True)
 #On retire les lignes des restaurants ayant des prix moyens aberrants, qui risquent de fausser nos graphiques
 
+#Etude de la complétude de notre base de données
+plt.figure(figsize=(20,20))
+plt.title("Valeurs manquantes pour chaque variable")
+sns.heatmap(parisiens.isna(), cbar=False)
+
 df = parisiens.groupby('Catégorie de prix').aggregate({'name':'count'}).reset_index()
 df = df.rename(columns={'name': 'Nombre de restaurants'})
 sns.catplot(x='Catégorie de prix', y='Nombre de restaurants', edgecolor="black", data=df,kind = "bar", color = "cyan")
@@ -32,7 +39,15 @@ parisiens.describe()
 #Le prix moyen du restaurant Parisien est de 33.60€, avec un écart-type de 102.36€. Cela semble élevé, et peut s'expliquer par le fait qu'il y a beaucoup 
 #de restaurants très chers parmi les restaurants dont on connaît le prix moyen dans notre base. Le prix médian, 22€ semble déjà plus raisonnable.
 
-##Quelques tendances
+#Représentation des effectifs de chaque catégorie de prix parmi les restaurants dont on connaît le prix moyen
+df = parisiens_avec_prix.groupby('Catégorie de prix').aggregate({'name':'count'}).reset_index()
+df = df.rename(columns={'name': 'Nombre de restaurants dont on connaît le prix moyen'})
+sns.catplot(x='Catégorie de prix', y='Nombre de restaurants dont on connaît le prix moyen', edgecolor="black", data=df,kind = "bar", color = "purple")
+
+#Histogramme représentant la distribution du prix moyen dans notre base de données
+sns.histplot(parisiens['Prix moyen'], kde = True)
+
+##Quelques tendances : étude de l'effet de certaines variables sur la catégorie de prix d'un restaurant
         
 #Moyenne de note globale par catégorie de prix
 parisiens['Note Globale'] = parisiens['Note Globale'].str.replace(",", ".").astype(float)
@@ -194,6 +209,14 @@ df = parisiens.groupby('arr').aggregate({'Prix moyen' : 'mean'}).reset_index()
 df = df.rename(columns = {'arr' : 'Arrondissement'})
 sns.catplot(x='Arrondissement', y='Prix moyen', edgecolor="black", data=df, kind = "bar", color = "pink")
 
+#Version cartographique de ce graphique :
+df = parisiens.groupby('arr').aggregate({'Prix moyen' : 'mean'}).reset_index()
+arrondissements.merge(df, how='inner').plot(column = 'Prix moyen',
+                                            cmap='OrRd',
+                                            legend = True, 
+                                            legend_kwds={'label': "Prix moyen par arrondissement", 
+                                                         'orientation': "horizontal"})
+
 #Traçons l'évolution du prix d'un restaurant en fonction de l'année de sa créaton
 
 df = parisiens.groupby('foundingYear').aggregate({'Prix moyen' : 'mean'}).reset_index()
@@ -227,7 +250,9 @@ sns.catplot(x='Taille du restaurant', y='Prix moyen', edgecolor="black", data=df
 parisiens.corr()['Prix moyen'].reset_index()
 #Les coefficients sont très petits mais leurs signes sont en accord avec les résultats tirés des graphiques précédents. 
 
-
+# Création d'une heatmap pour voir plus largement les corrélations entre toutes les variables
+sns.set(font_scale=1.4)
+sns.clustermap(parisiens.drop(columns = 'dep').corr(), annot=True, annot_kws={'size': 18}, figsize=(50, 50))
 
 
 
