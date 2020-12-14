@@ -249,36 +249,3 @@ sns.catplot(x='Taille du restaurant', y='Prix moyen', edgecolor="black", data=df
 
 parisiens.corr()['Prix moyen'].reset_index()
 #Les coefficients sont très petits mais leurs signes sont en accord avec les résultats tirés des graphiques précédents. 
-
-
-
-
-
-## INUTILE On l'a replacé autre part : le bout de code pour obtenir la variable 'Prix moyen'
-
-parisiens_test4 = parisiens_test3[parisiens_test3['Fourchette de prix'].str.contains('€')].reset_index(drop=True)
-parisiens_test4['Fourchette prix inf'] = 'Non renseigné'
-parisiens_test4['Fourchette prix sup'] = 'Non renseigné'
-
-#On récupère la borne supérieure et la borne inférieure de la variable 'Fourchette de prix'
-for k in range(parisiens_test4.shape[0]):
-    i = 0
-    carac = parisiens_test4['Fourchette de prix'][k][0]
-    while carac != '€':
-        i = i+1
-        carac = parisiens_test4['Fourchette de prix'][k][i]
-    j = i
-    carac = parisiens_test4['Fourchette de prix'][k][i+1] #Pour que carac ne soit plus égal à '€'
-    while carac != '€':
-        i = i+1
-        carac = parisiens_test4['Fourchette de prix'][k][i]
-    parisiens_test4['Fourchette prix inf'][k] = parisiens_test4['Fourchette de prix'][k][0:j]
-    parisiens_test4['Fourchette prix sup'][k] = parisiens_test4['Fourchette de prix'][k][j+4:i]
-
-#On convertit ces bornes en 'int'
-    
-parisiens_test4 = parisiens_test4[parisiens_test4['Fourchette prix sup'] != '23\xa0243'].reset_index(drop = True)
-#On fait cela pour enlever une ligne délirante où la fourchette de prix supérieure vaut '23\xa0243'
-
-parisiens_test4 = parisiens_test4.astype({'Fourchette prix inf' : 'int64','Fourchette prix sup' : 'int64'})
-parisiens_test4['Prix moyen'] = (parisiens_test4['Fourchette prix inf'] + parisiens_test4['Fourchette prix sup']) / 2
