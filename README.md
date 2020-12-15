@@ -14,4 +14,8 @@ Dans ce projet, nous allons étudier les déterminants du prix d'un repas dans u
 
 - [LE FICHIER DE DONNÉES A LA FIN DU SCRAPPING]
 
-- Untitled1.ipynb : notebook final du projet en trois partiels (scrapping, analyse descriptive et modéliation).
+- partie1_recuperation_des_donnees.ipynb : première partie du projet
+
+- partie2_analyse_descriptive : deuxième partie du sujet
+
+- partie3_modelisation.ipynb : troisième partie du projet
