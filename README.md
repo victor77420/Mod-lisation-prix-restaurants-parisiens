@@ -10,9 +10,7 @@ Dans ce projet, nous allons étudier les déterminants du prix d'un repas dans u
 
 ## Organisation du repository
 
-- [LE FICHIER DES DONNÉES BRUTES ISSU DE SALESDORADO]
-
-- [LE FICHIER DE DONNÉES A LA FIN DU SCRAPPING]
+- tablefinalisee.csv : la table obtenue à la fin de la partie 1 et de nos scrappings 
 
 - partie1_recuperation_des_donnees.ipynb : première partie du projet
 
