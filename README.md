@@ -16,6 +16,6 @@ Dans ce projet, nous allons étudier les déterminants du prix d'un repas dans u
 
 - partie1_recuperation_des_donnees.ipynb : première partie du projet
 
-- partie2_analyse_descriptive : deuxième partie du sujet
+- partie2_analyse_descriptive.ipynb : deuxième partie du sujet
 
 - partie3_modelisation.ipynb : troisième partie du projet
